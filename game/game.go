@@ -51,13 +51,23 @@ func (g *Game) Init() {
 			case 'P':
 				g.player = NewPlayer(row, col, 1, g.cfg.Player, g.maze)
 				g.Sprites = append(g.Sprites, g.player)
-			// Add other sprite initialization logic here
+			case 'C':
+				g.Sprites = append(g.Sprites, NewChaser(row, col, g.cfg.Chaser, g.maze))
 			case '.':
 				totalDots++
 			}
 		}
 	}
 	g.player.numDots = &totalDots
+
+	for _, sprite := range g.Sprites {
+		switch sprite.(type) {
+		case *Chaser:
+			c := sprite.(*Chaser)
+			c.SetPlayer(g.player)
+			c.SetSprites(g.Sprites)
+		}
+	}
 }
 
 // PrintScreen prints the current game screen
@@ -89,7 +99,7 @@ func (g *Game) PrintScreen() {
 
 	// Print game-related information
 	g.MoveCursor(len(g.maze)+1, 0)
-	fmt.Println("Score:", g.player.score, "\tLives:", g.player.lives, "\t Total Dots:", g.player.numDots)
+	fmt.Println("Score:", g.player.score, "\tLives:", g.player.lives, "\t Total Dots:", *g.player.numDots)
 }
 
 // MoveCursor moves the console cursor to the specified row and column

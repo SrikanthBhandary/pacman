@@ -41,7 +41,14 @@ func main() {
 	for {
 		// Move all sprites concurrently
 		for _, s := range g.Sprites {
-			go s.Move()
+			switch s.(type) {
+			case *game.Player:
+				go s.Move()
+			default:
+				go s.Move()
+
+			}
+
 		}
 
 		// Check for game over conditions
